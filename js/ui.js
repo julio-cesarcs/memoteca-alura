@@ -6,6 +6,10 @@ const ui = {
     document.getElementById("pensamento-id").value = pensamento.id;
     document.getElementById("pensamento-conteudo").value = pensamento.conteudo;
     document.getElementById("pensamento-autoria").value = pensamento.autoria;
+    document.getElementById("pensamento-data").value = pensamento.data
+      .toISOString()
+      .split("T")[0];
+    document.getElementById("form-container").scrollIntoView();
   },
 
   limparFormulario() {
@@ -54,22 +58,33 @@ const ui = {
     pensamentoAutoria.textContent = pensamento.autoria;
     pensamentoAutoria.classList.add("pensamento-autoria");
 
+    const pensamentoData = document.createElement("div");
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      timeZone: "UTC",
+    };
+    const dataFormatada = pensamento.data.toLocaleDateString("pt-BR", options);
+    pensamentoData.textContent = dataFormatada;
+    pensamentoData.classList.add("pensamento-data");
+
     const botaoFavorito = document.createElement("button");
     botaoFavorito.classList.add("botao-favorito");
-    botaoFavorito.onclick = async() => {
-      try{
-      await api.atualizarFavorito(pensamento.id, !pensamento.favorito)
-      ui.renderizarPensamentos()
-    }catch{
-      alert("Erro ao atualizar favorito")
-
-    }
+    botaoFavorito.onclick = async () => {
+      try {
+        await api.atualizarFavorito(pensamento.id, !pensamento.favorito);
+        ui.renderizarPensamentos();
+      } catch {
+        alert("Erro ao atualizar favorito");
+      }
     };
 
     const iconeFavorito = document.createElement("img");
-    iconeFavorito.src = pensamento.favorito ?
-    "assets/imagens/icone-favorito.png":
-    "assets/imagens/icone-favorito_outline.png";
+    iconeFavorito.src = pensamento.favorito
+      ? "assets/imagens/icone-favorito.png"
+      : "assets/imagens/icone-favorito_outline.png";
     iconeFavorito.alt = "Favorito";
     botaoFavorito.appendChild(iconeFavorito);
 
@@ -102,7 +117,13 @@ const ui = {
     icones.classList.add("icones");
     icones.append(botaoFavorito, botaoEditar, botaoExcluir);
 
-    li.append(iconeAspas, pensamentoConteudo, pensamentoAutoria, icones);
+    li.append(
+      iconeAspas,
+      pensamentoConteudo,
+      pensamentoAutoria,
+      pensamentoData,
+      icones
+    );
     listaPensamentos.appendChild(li);
   },
 };
